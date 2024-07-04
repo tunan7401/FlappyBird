@@ -69,6 +69,7 @@ public class BirdChooser extends JFrame {
         SwingUtilities.invokeLater(() -> {
             BirdChooser frame = new BirdChooser();
             frame.setVisible(true);
+            System.err.println();
         });
     }
 }
