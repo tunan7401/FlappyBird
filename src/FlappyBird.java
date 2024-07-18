@@ -82,7 +82,11 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
 
     FlappyBird(){
         setPreferredSize(new Dimension(boardWidth, boardHeight));
+<<<<<<< Updated upstream
         // setBackground(Color.blue);
+=======
+        setBackground(Color.blue);
+>>>>>>> Stashed changes
         setFocusable(true);
         addKeyListener(this);
 
