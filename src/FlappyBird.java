@@ -3,11 +3,16 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.channels.Pipe;
+import javax.sound.sampled.*; // Import thư viện âm thanh
 
-public class FlappyBird extends JPanel implements ActionListener, KeyListener{
+public class FlappyBird extends JPanel implements ActionListener, KeyListener {
+
     int boardWidth = 360;
     int boardHeight = 640;
+    double score;
 
     //image
     Image backgroundImg;
@@ -15,21 +20,13 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     Image topPipeImg;
     Image bottomPipeImg;
 
+
     //Bird
     int birdX = boardWidth/8;
     int birdY = boardHeight/2;
-    int birdWidth = 70;
-    int birdHeight = 70;
-    //PipeBottom
-    int PipeBottomX = 260;
-    int PipeBottomY = 640-217;
-    int PipeBottomWidth = 69;
-    int PipeBottomHeight = 217;
-    //PipeTop
-    int PipeTopX = 260;
-    int PipeTopY = 0;
-    int PipeTopWidth = 69;
-    int PipeTopHeight = 217;
+    int birdWidth = 60;
+    int birdHeight = 60;
+
 
     class Bird{
         int x = birdX;
@@ -43,33 +40,25 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         }
     }
 
-    class PipeBottom{
-        int x = PipeBottomX;
-        int y = PipeBottomY;
-        int width = PipeBottomWidth;
-        int height = PipeBottomHeight;
-        Image img;
-
-        PipeBottom(Image img){
-            this.img = img;
-        }
-    }
-
     //pipes
     int pipeX = boardWidth;
-    int pipeY = 0;
     int pipeWidth = 64;
     int pipeHeight = 512;
+    int gapHeight = 150; // khoảng trống giữa cột trên và cột dưới
 
     class Pipe{
-        int x = pipeX;
-        int y = pipeY;
-        int width = pipeWidth;
-        int height = pipeHeight;
+        int x;
+        int y;
+        int width;
+        int height;
         Image img;
         boolean passed = false;
 
-        Pipe(Image img){
+        Pipe(int x, int y, int width, int height, Image img) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
             this.img = img;
         }
     }
@@ -77,34 +66,39 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     //game logic 
     Bird bird;
     int velocityX = -4;
-    PipeBottom pipeTop;
     int velocityY = 0;
     int gravity = 1;
 
-    ArrayList<Pipe> pipes;
+    ArrayList<Pipe> listTopPipes;
+    ArrayList<Pipe> listBottomPipes;
+
     Random random = new Random();
 
     Timer gameLoop;
     Timer placePipesTimer;
+
     boolean gameOver = false;
-    double score = 0;
+    // double score = 0;
 
     FlappyBird(){
         setPreferredSize(new Dimension(boardWidth, boardHeight));
-        //setBackground(Color.blue);
+        // setBackground(Color.blue);
         setFocusable(true);
         addKeyListener(this);
 
 
         //load images
-        backgroundImg = new ImageIcon(getClass().getResource("./background.png")).getImage();
-        birdImg = new ImageIcon(getClass().getResource("./bird.png")).getImage();
+        backgroundImg = new ImageIcon(getClass().getResource("./background1.png")).getImage();
+        birdImg = new ImageIcon(getClass().getResource("./chimxanh.png")).getImage();
         topPipeImg = new ImageIcon(getClass().getResource("./pipeUp.png")).getImage();
         bottomPipeImg = new ImageIcon(getClass().getResource("./pipeDown.png")).getImage();
 
         //bird
         bird = new Bird(birdImg);
-        pipes = new ArrayList<Pipe>();
+
+        //pipes
+        listTopPipes = new ArrayList<Pipe>();
+        listBottomPipes = new ArrayList<Pipe>();
 
         //place pipes timer
         placePipesTimer = new Timer(1500, new ActionListener(){
@@ -120,35 +114,42 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         gameLoop.start();
     }
 
+
     public void placePipes(){
-        int randomPipeY = (int) (pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2));
-        int openingSpace = boardHeight/4; 
+        //(0-1) * pipeHeight/2 -> (0-256)
+        int randomPipeHeight = (int) ( Math.random() * ( (500-300) + 1));
+        
 
-        Pipe topPipe = new Pipe(topPipeImg);
-        topPipe.y = randomPipeY;
-        pipes.add(topPipe);
+        Pipe topPipe = new Pipe(pipeX, 0, pipeWidth, randomPipeHeight, topPipeImg);
+        listTopPipes.add(topPipe);
 
-        Pipe bottomPipe = new Pipe(bottomPipeImg);
-        bottomPipe.y = topPipe.y + pipeHeight +openingSpace;
-        pipes.add(bottomPipe);
+        Pipe bottomPipe = new Pipe(pipeX, randomPipeHeight + gapHeight, pipeWidth, pipeHeight, bottomPipeImg);
+        listBottomPipes.add(bottomPipe);
     }
+
 
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         draw(g);
     }
 
+
     public void draw(Graphics g){
+        System.out.println(2);
         g.drawImage(backgroundImg, 0, 0, boardWidth, boardHeight, null);
         g.drawImage(birdImg, birdX, birdY, birdWidth, birdHeight, null);
 
-        //pipes
-        for (int i = 0; i < pipes.size(); i++){
-            Pipe pipe = pipes.get(i);
-            g.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height, null);
+        // toppipes
+        for (int i = 0; i < listTopPipes.size(); i++){
+            Pipe upPipe = listTopPipes.get(i);
+            g.drawImage(upPipe.img, upPipe.x, upPipe.y, upPipe.width, upPipe.height, null);
         }
-        //g.drawImage(bottomPipeImg, PipeBottomX, PipeBottomY, PipeBottomWidth, PipeBottomHeight, null);
-        //g.drawImage(topPipeImg, PipeTopX, PipeTopY, PipeTopWidth, PipeTopHeight, null);
+        // bottompipes
+        for (int i = 0; i < listBottomPipes.size(); i++){
+            Pipe lowPipe = listBottomPipes.get(i);
+            g.drawImage(lowPipe.img, lowPipe.x, lowPipe.y, lowPipe.width, lowPipe.height, null);
+        }
+
         g.setColor(Color.white);
         g.setFont(new Font("Arial", Font.PLAIN, 32));
         if (gameOver){
@@ -165,32 +166,56 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         birdY += velocityY;
         birdY = Math.max(birdY ,0);
 
-        //pipes
-        for (int i = 0; i < pipes.size(); i++){
-            Pipe pipe = pipes.get(i);
-            pipe.x += velocityX;
+        // toppipes
+        for (int i = 0; i < listTopPipes.size(); i++){
+            Pipe pipeTren = listTopPipes.get(i);
+            pipeTren.x += velocityX;
 
-            if (!pipe.passed && bird.x > pipe.x + pipe.width){
-                pipe.passed = true;
-                score += 0.5;
-            }
-
-            if (collision(bird, pipe)){
+            if ((birdX + birdWidth > pipeTren.x 
+            && birdX < pipeTren.x + pipeTren.width) 
+            && (birdY < pipeTren.height)){
                 gameOver = true;
+                // playGameOverSound();
+            }      
+            else if (pipeTren.x + pipeTren.width < birdX && !pipeTren.passed) {
+                score+=0.5;
+                pipeTren.passed = true;
             }
         }
 
-        if (bird.y > boardHeight){
+        // bottompipes
+        for (int i = 0; i < listBottomPipes.size(); i++){
+            Pipe pipeDuoi = listBottomPipes.get(i);
+            pipeDuoi.x += velocityX;
+
+            if ((birdX + birdWidth > pipeDuoi.x 
+            && birdX < pipeDuoi.x + pipeDuoi.width) 
+            && (birdY + birdHeight > pipeDuoi.y)){
+                gameOver = true;
+                // playGameOverSound();
+            }
+            else if (pipeDuoi.x + pipeDuoi.width < birdX && !pipeDuoi.passed) {
+                score+=0.5;
+                pipeDuoi.passed = true;
+            }
+        }
+
+        if (birdY > 531){
             gameOver = true;
+            // playGameOverSound();
         }
     }
 
-    public boolean collision(Bird a, Pipe b){
-        return a.x < b.x + b.width &&
-               a.x + a.width > b.x &&
-               a.y < b.y + b.height &&
-               a.y + a.height > b.y;
+    // Phương thức phát âm thanh khi trò chơi kết thúc
+    public void playGameOverSound() throws UnsupportedAudioFileException, IOException, LineUnavailableException{
+        File file = new File("oof.wav");
+        AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioStream);
+
+        clip.start();
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -217,5 +242,5 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
-    }
+    }    
 }
