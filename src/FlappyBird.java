@@ -13,6 +13,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     int boardWidth = 360;
     int boardHeight = 640;
     double score;
+    double hp = 3;
 
     //image
     Image backgroundImg;
@@ -80,13 +81,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     boolean gameOver = false;
     // double score = 0;
 
+    long lastCollisionTime = 0; // Biến theo dõi thời gian va chạm cuối cùng
+    long collisionCooldown = 1000; // 1 giây
+
     FlappyBird(){
         setPreferredSize(new Dimension(boardWidth, boardHeight));
-<<<<<<< Updated upstream
         // setBackground(Color.blue);
-=======
-        setBackground(Color.blue);
->>>>>>> Stashed changes
         setFocusable(true);
         addKeyListener(this);
 
@@ -115,7 +115,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
 
         //game timer
         gameLoop = new Timer(1000/60, this);
-        gameLoop.start();
+        gameLoop.start(); 
     }
 
 
@@ -154,6 +154,15 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             g.drawImage(lowPipe.img, lowPipe.x, lowPipe.y, lowPipe.width, lowPipe.height, null);
         }
 
+        g.setColor(Color.red);
+        g.setFont(new Font("Arial", Font.PLAIN, 32));
+        if (gameOver){
+            g.drawString("Game Over " + String.valueOf((int) score), 10, 35);
+        }
+        else{
+            g.drawString(String.valueOf((int) hp), boardWidth-30, 35);
+        }
+
         g.setColor(Color.white);
         g.setFont(new Font("Arial", Font.PLAIN, 32));
         if (gameOver){
@@ -165,6 +174,8 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     }
 
     public void move(){
+        long currentTime = System.currentTimeMillis();
+
         //bird
         velocityY += gravity;
         birdY += velocityY;
@@ -178,8 +189,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             if ((birdX + birdWidth > pipeTren.x 
             && birdX < pipeTren.x + pipeTren.width) 
             && (birdY < pipeTren.height)){
-                gameOver = true;
-                // playGameOverSound();
+                if (currentTime - lastCollisionTime > collisionCooldown) {
+                    hp -= 1;
+                    lastCollisionTime = currentTime;
+                    if (hp == 0) gameOver = true;
+                    // playGameOverSound();
+                }
             }      
             else if (pipeTren.x + pipeTren.width < birdX && !pipeTren.passed) {
                 score+=0.5;
@@ -195,8 +210,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             if ((birdX + birdWidth > pipeDuoi.x 
             && birdX < pipeDuoi.x + pipeDuoi.width) 
             && (birdY + birdHeight > pipeDuoi.y)){
-                gameOver = true;
-                // playGameOverSound();
+                if (currentTime - lastCollisionTime > collisionCooldown) {
+                    hp -= 1;
+                    lastCollisionTime = currentTime;
+                    if (hp == 0) gameOver = true;
+                    // playGameOverSound();
+                }
             }
             else if (pipeDuoi.x + pipeDuoi.width < birdX && !pipeDuoi.passed) {
                 score+=0.5;
@@ -205,8 +224,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         }
 
         if (birdY > 531){
-            gameOver = true;
-            // playGameOverSound();
+            if (currentTime - lastCollisionTime > collisionCooldown) {
+                hp -= 1;
+                lastCollisionTime = currentTime;
+                if (hp == 0) gameOver = true;
+                // playGameOverSound();
+            }
         }
     }
 
