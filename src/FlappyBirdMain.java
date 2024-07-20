@@ -1,11 +1,13 @@
 
+import java.awt.Frame;
+
 import javax.swing.*;
 
 public class FlappyBirdMain {
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Flappy Bird");
-        MainMenuPanel mainMenu = new MainMenuPanel();
+        MainMenuPanel mainMenu = new MainMenuPanel(frame);
 
         frame.add(mainMenu);
         frame.setSize(400, 700);

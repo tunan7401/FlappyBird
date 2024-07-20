@@ -14,8 +14,10 @@ public class MainMenuPanel extends JPanel {
     private BufferedImage pipeImage;
     private BufferedImage cloudImage;
     private BufferedImage groundImage;
+    private JFrame frame;
 
-    public MainMenuPanel() {
+    public MainMenuPanel(JFrame frame) {
+        this.frame = frame;
         setLayout(null);
 
         try {
@@ -48,6 +50,7 @@ public class MainMenuPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("PLAY button pressed");
+                startGame();
             }
         });
 
@@ -74,6 +77,15 @@ public class MainMenuPanel extends JPanel {
         add(playButton);
         add(chooseBirdButton);
         add(watchRankButton);
+    }
+
+    private void startGame() {
+        frame.getContentPane().removeAll(); // Xóa tất cả các thành phần trong frame
+        FlappyBird flappyBird = new FlappyBird();
+        frame.add(flappyBird);
+        frame.revalidate(); // Đảm bảo các thay đổi được cập nhật
+        frame.repaint();
+        flappyBird.requestFocus();
     }
 
     @Override

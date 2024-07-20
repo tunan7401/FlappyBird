@@ -82,7 +82,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     // double score = 0;
 
     long lastCollisionTime = 0; // Biến theo dõi thời gian va chạm cuối cùng
-    long collisionCooldown = 1000; // 1 giây
+    long collisionCooldown = 3000; // 3 giây
 
     FlappyBird(){
         setPreferredSize(new Dimension(boardWidth, boardHeight));
