@@ -15,12 +15,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-public class BirdChooser extends JFrame {
-    public BirdChooser() {
-        setTitle("Bird Chooser");
-        setSize(400, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+public class BirdChooser extends JPanel {
+    private JFrame frame;
+
+    public BirdChooser(JFrame frame) {
+        this.frame = frame;
         setLayout(new BorderLayout());
 
         JPanel birdPanel = new JPanel();
@@ -65,10 +64,10 @@ public class BirdChooser extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            BirdChooser frame = new BirdChooser();
-            frame.setVisible(true);
-        });
-    }
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(() -> {
+    //         BirdChooser frame = new BirdChooser();
+    //         frame.setVisible(true);
+    //     });
+    // }
 }

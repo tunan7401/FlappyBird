@@ -1,19 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class FlappyBirdRank extends JFrame {
+public class FlappyBirdRank extends JPanel {
+
+    private JFrame frame;
 
     private ImageIcon groundIcon;
     private ImageIcon backgroundIcon;
     private ImageIcon birdIcon;
     private ImageIcon pipeIcon;
 
-    public FlappyBirdRank() {
-        setTitle("Flappy Bird Rank");
-        setSize(400, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
+    public FlappyBirdRank(JFrame frame) {
+        this.frame = frame;
+        setLayout(new BorderLayout());
 
         groundIcon = new ImageIcon(getClass().getResource("Image/bg4.png"));
         backgroundIcon = new ImageIcon(getClass().getResource("Image/bg3.png"));
@@ -85,10 +84,10 @@ public class FlappyBirdRank extends JFrame {
         add(mainPanel);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            FlappyBirdRank frame = new FlappyBirdRank();
-            frame.setVisible(true);
-        });
-    }
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(() -> {
+    //         FlappyBirdRank frame = new FlappyBirdRank();
+    //         frame.setVisible(true);
+    //     });
+    // }
 }

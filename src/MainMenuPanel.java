@@ -57,12 +57,8 @@ public class MainMenuPanel extends JPanel {
         chooseBirdButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    ProcessBuilder pb = new ProcessBuilder("java", "-cp", ".", "BirdChooser");
-                    pb.start();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                System.out.println("Choose bird button pressed");
+                chooseBird();
             }
         });
 
@@ -70,6 +66,7 @@ public class MainMenuPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("WATCH RANK button pressed");
+                watchRank();
             }
         });
 
@@ -86,6 +83,24 @@ public class MainMenuPanel extends JPanel {
         frame.revalidate(); // Đảm bảo các thay đổi được cập nhật
         frame.repaint();
         flappyBird.requestFocus();
+    }
+
+    private void chooseBird() {
+        frame.getContentPane().removeAll(); // Xóa tất cả các thành phần trong frame
+        BirdChooser birdChoose = new BirdChooser(frame);
+        frame.add(birdChoose);
+        frame.revalidate(); // Đảm bảo các thay đổi được cập nhật
+        frame.repaint();
+        birdChoose.requestFocus();
+    }
+
+    private void watchRank() {
+        frame.getContentPane().removeAll(); // Xóa tất cả các thành phần trong frame
+        FlappyBirdRank xemHang = new FlappyBirdRank(frame);
+        frame.add(xemHang);
+        frame.revalidate(); // Đảm bảo các thay đổi được cập nhật
+        frame.repaint();
+        xemHang.requestFocus();
     }
 
     @Override
